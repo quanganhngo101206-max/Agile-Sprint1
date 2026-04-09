@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>Thông tin cá nhân</h5>
+        </div>
+        <div class="card-body">
+          <form th:action="@{/profile/update}" th:object="${user}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label>Tên đăng nhập</label>
+                <input type="text" class="form-control" th:field="*{username}" readonly>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label>Email</label>
+                <input type="email" class="form-control" th:field="*{email}" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label>Họ và tên</label>
+              <input type="text" class="form-control" th:field="*{fullName}" required>
+            </div>
+            <div class="mb-3">
+              <label>Số điện thoại</label>
+              <input type="tel" class="form-control" th:field="*{phone}" required>
+            </div>
+            <div class="mb-3">
+              <label>Địa chỉ</label>
+              <textarea class="form-control" th:field="*{address}" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label>Đổi mật khẩu mới</label>
+              <input type="password" name="newPassword" class="form-control" placeholder="Để trống nếu không đổi">
+            </div>
+            <button type="submit" class="btn btn-primary rounded-pill px-4">
+              <i class="fas fa-save me-2"></i>Cập nhật
+            </button>
+            <a href="/home" class="btn btn-secondary rounded-pill px-4">Quay lại</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>
