@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container mt-4">
+  <h2 class="fw-bold mb-4"><i class="fas fa-clipboard-list me-2"></i>Xác nhận đơn hàng</h2>
+
+  <div class="row">
+    <div class="col-md-7">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0">Thông tin giao hàng</h5>
+        </div>
+        <div class="card-body">
+          <form th:action="@{/order/create}" method="post">
+            <div class="mb-3">
+              <label>Họ tên</label>
+              <input type="text" name="fullName" th:value="${session.user.fullName}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label>Số điện thoại</label>
+              <input type="tel" name="phone" th:value="${session.user.phone}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label>Địa chỉ giao hàng</label>
+              <textarea name="address" class="form-control" rows="3" required th:text="${session.user.address}"></textarea>
+            </div>
+            <div class="mb-3">
+              <label>Ghi chú</label>
+              <textarea name="note" class="form-control" rows="2" placeholder="Ghi chú cho đơn hàng..."></textarea>
+            </div>
+
+            <h5 class="mt-4 mb-3">Phương thức thanh toán</h5>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="radio" name="paymentMethod" value="COD" id="cod" checked>
+              <label class="form-check-label" for="cod">
+                <i class="fas fa-money-bill-wave me-2"></i>Thanh toán khi nhận hàng (COD)
+              </label>
+            </div>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="radio" name="paymentMethod" value="BANK" id="bank">
+              <label class="form-check-label" for="bank">
+                <i class="fas fa-university me-2"></i>Chuyển khoản ngân hàng
+              </label>
+            </div>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="radio" name="paymentMethod" value="MOMO" id="momo">
+              <label class="form-check-label" for="momo">
+                <i class="fas fa-wallet me-2"></i>Ví Momo
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-lg w-100 mt-4 rounded-pill">
+              <i class="fas fa-check-circle me-2"></i>Xác nhận đặt hàng
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-5">
+      <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0">Đơn hàng của bạn</h5>
+        </div>
+        <div class="card-body">
+          <div th:each="c : ${cartList}" class="d-flex justify-content-between mb-3">
+            <span th:text="${c.product.name} + ' x ' + ${c.quantity}"></span>
+            <span th:text="${#numbers.formatCurrency(c.product.price * c.quantity)}"></span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Tạm tính:</span>
+            <span th:text="${#numbers.formatCurrency(totalPrice)}"></span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Phí vận chuyển:</span>
+            <span>₫30,000</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between fw-bold fs-5">
+            <span>Tổng cộng:</span>
+            <span class="text-danger" th:text="${#numbers.formatCurrency(totalPrice + 30000)}"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

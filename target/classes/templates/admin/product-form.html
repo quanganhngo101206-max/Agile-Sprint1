@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+
+<div th:replace="~{admin/admin-layout :: layout}">
+    <div th:fragment="content">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">
+                    <i class="fas fa-box me-2" th:classappend="${product.id} ? 'text-warning' : 'text-success'"></i>
+                    <span th:text="${product.id} ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'"></span>
+                </h2>
+                <p class="text-muted small mb-0">
+                    <span th:if="${product.id}">Cập nhật thông tin sản phẩm</span>
+                    <span th:unless="${product.id}">Thêm sản phẩm mới vào cửa hàng</span>
+                </p>
+            </div>
+            <div>
+                <a href="/admin/products" class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="fas fa-arrow-left me-2"></i>Quay lại
+                </a>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-header bg-white border-0 pt-4 px-4">
+                        <h5 class="fw-bold mb-0">
+                            <i class="fas fa-info-circle me-2 text-primary"></i>Thông tin sản phẩm
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/admin/products/save}" th:object="${product}" method="post" enctype="multipart/form-data">
+                            <input type="hidden" th:field="*{id}">
+
+                            <!-- Tên sản phẩm -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-tag me-1 text-danger"></i>Tên sản phẩm <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" th:field="*{name}" class="form-control form-control-lg rounded-3"
+                                       placeholder="Nhập tên sản phẩm..." required>
+                                <small class="text-muted">Ví dụ: Áo thể thao Nike, Giày chạy bộ Adidas,...</small>
+                            </div>
+
+                            <div class="row">
+                                <!-- Giá -->
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fas fa-dollar-sign me-1 text-success"></i>Giá sản phẩm <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white border-end-0">₫</span>
+                                        <input type="number" th:field="*{price}" class="form-control border-start-0 rounded-end-3"
+                                               placeholder="0" step="1000" required>
+                                    </div>
+                                    <small class="text-muted">Nhập giá theo đơn vị VNĐ</small>
+                                </div>
+
+                                <!-- Số lượng -->
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fas fa-cubes me-1 text-info"></i>Số lượng tồn kho <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" th:field="*{quantity}" class="form-control rounded-3"
+                                           placeholder="0" min="0" required>
+                                    <small class="text-muted">Số lượng sản phẩm có trong kho</small>
+                                </div>
+                            </div>
+
+                            <!-- Danh mục -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-folder me-1 text-warning"></i>Danh mục <span class="text-danger">*</span>
+                                </label>
+                                <select th:field="*{category.id}" class="form-select rounded-3" required>
+                                    <option value="">-- Chọn danh mục --</option>
+                                    <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                                </select>
+                                <small class="text-muted">Chọn danh mục phù hợp cho sản phẩm</small>
+                            </div>
+
+                            <!-- Hình ảnh -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-image me-1 text-primary"></i>Hình ảnh sản phẩm
+                                </label>
+
+                                <!-- Preview ảnh hiện tại -->
+                                <div th:if="${product.id != null and product.image != null}" class="mb-3">
+                                    <div class="border rounded-3 p-3 bg-light">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img th:src="@{${product.image}}" width="80" height="80" class="rounded-3 object-fit-cover shadow-sm">
+                                            <div>
+                                                <small class="text-muted d-block">Ảnh hiện tại</small>
+                                                <span class="badge bg-secondary" th:text="${product.image}"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="file" name="file" class="form-control rounded-3" accept="image/*">
+                                <small class="text-muted">Chọn ảnh mới để thay đổi (hỗ trợ JPG, PNG, GIF)</small>
+                            </div>
+
+                            <!-- Mô tả -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-align-left me-1 text-secondary"></i>Mô tả sản phẩm
+                                </label>
+                                <textarea th:field="*{description}" class="form-control rounded-3" rows="5"
+                                          placeholder="Mô tả chi tiết về sản phẩm..."></textarea>
+                                <small class="text-muted">Mô tả đầy đủ thông tin, chất liệu, công dụng của sản phẩm</small>
+                            </div>
+
+                            <!-- Button submit -->
+                            <div class="d-flex gap-3 pt-3 border-top">
+                                <button type="submit" class="btn btn-primary rounded-pill px-5 py-2">
+                                    <i class="fas fa-save me-2"></i>
+                                    <span th:text="${product.id} ? 'Cập nhật' : 'Thêm mới'"></span>
+                                </button>
+                                <a href="/admin/products" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+                                    <i class="fas fa-times me-2"></i>Hủy bỏ
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar - Hướng dẫn -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white border-0 pt-4 px-4">
+                        <h5 class="fw-bold mb-0">
+                            <i class="fas fa-lightbulb me-2 text-warning"></i>Mẹo nhập liệu
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="d-flex mb-3">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                <i class="fas fa-tag text-primary"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 fw-bold">Tên sản phẩm</h6>
+                                <small class="text-muted">Nên đặt tên ngắn gọn, dễ nhớ, có thương hiệu</small>
+                            </div>
+                        </div>
+                        <div class="d-flex mb-3">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                <i class="fas fa-dollar-sign text-success"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 fw-bold">Giá sản phẩm</h6>
+                                <small class="text-muted">Nhập giá chính xác, so sánh với thị trường</small>
+                            </div>
+                        </div>
+                        <div class="d-flex mb-3">
+                            <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                <i class="fas fa-cubes text-info"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 fw-bold">Số lượng tồn kho</h6>
+                                <small class="text-muted">Cập nhật thường xuyên để tránh hết hàng</small>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
+                                <i class="fas fa-image text-warning"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 fw-bold">Hình ảnh</h6>
+                                <small class="text-muted">Nên dùng ảnh chất lượng cao, nền trắng</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông báo -->
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
+                            <h6 class="fw-bold">Lưu ý</h6>
+                            <small class="text-muted">
+                                Sau khi thêm/sửa sản phẩm, sản phẩm sẽ được hiển thị ngay trên trang chủ và danh sách sản phẩm.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .object-fit-cover {
+        object-fit: cover;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    .form-control, .form-select {
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s;
+    }
+    .form-control:hover, .form-select:hover {
+        border-color: #bdbdbd;
+    }
+</style>
+
+</body>
+</html>
